@@ -154,7 +154,7 @@
     border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; min-width: 0;
   }
   .filters input { flex: 1 1 200px; }
-  .tbl-wrap { overflow: auto; max-height: 780px; overscroll-behavior: contain; border: 1px solid var(--border); border-radius: 8px; }
+  .tbl-wrap { overflow: auto; max-height: 420px; overscroll-behavior: contain; border: 1px solid var(--border); border-radius: 8px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--grid); white-space: nowrap; }
   td.note { white-space: normal; min-width: 180px; color: var(--text-2); }
@@ -300,7 +300,7 @@
   var GID = "0";
   var RANGE = "A1:J";                 // main table only (L:M summary is recomputed here)
   var AUTO_REFRESH_MS = 5 * 60 * 1000;
-  var VISIBLE_ROWS = 20;              // table shows this many rows, the rest scroll
+  var VISIBLE_ROWS = 10;              // table shows this many rows, the rest scroll
 
   var state = { rows: [], sortKey: "no", sortDir: 1 };
   var $ = function (id) { return document.getElementById(id); };
