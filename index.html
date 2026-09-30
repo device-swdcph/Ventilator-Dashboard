@@ -6,7 +6,7 @@
 <title>Ventilator PM Battery</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   /* ===== Tokens ===== */
   :root {
@@ -74,7 +74,7 @@
   body {
     background: var(--page);
     color: var(--text);
-    font-family: "Noto Sans Thai", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-family: "Prompt", system-ui, -apple-system, "Segoe UI", sans-serif;
     font-size: 14px;
     line-height: 1.5;
   }
@@ -154,11 +154,11 @@
     border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; min-width: 0;
   }
   .filters input { flex: 1 1 200px; }
-  .tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+  .tbl-wrap { overflow: auto; max-height: 780px; overscroll-behavior: contain; border: 1px solid var(--border); border-radius: 8px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--grid); white-space: nowrap; }
   td.note { white-space: normal; min-width: 180px; color: var(--text-2); }
-  th { position: sticky; top: 0; background: var(--surface-2); font-weight: 600; color: var(--text-2); cursor: pointer; user-select: none; }
+  th { position: sticky; top: 0; z-index: 1; background: var(--surface-2); font-weight: 600; color: var(--text-2); cursor: pointer; user-select: none; }
   th[aria-sort="ascending"]::after { content: " ▲"; font-size: 10px; }
   th[aria-sort="descending"]::after { content: " ▼"; font-size: 10px; }
   tbody tr:hover { background: var(--surface-2); }
@@ -300,6 +300,7 @@
   var GID = "0";
   var RANGE = "A1:J";                 // main table only (L:M summary is recomputed here)
   var AUTO_REFRESH_MS = 5 * 60 * 1000;
+  var VISIBLE_ROWS = 20;              // table shows this many rows, the rest scroll
 
   var state = { rows: [], sortKey: "no", sortDir: 1 };
   var $ = function (id) { return document.getElementById(id); };
@@ -501,12 +502,25 @@
         '</td><td class="num">' + (r.age != null ? esc(r.age) : "–") + "</td><td>" + badgeBatt(r) + "</td><td>" + badgeUse(r) +
         '</td><td class="note">' + (esc(r.note) || '<span style="color:var(--muted)">–</span>') + "</td></tr>";
     }).join("") || '<tr><td colspan="8" class="empty">ไม่พบรายการที่ตรงกับเงื่อนไข</td></tr>';
-    $("count").textContent = "แสดง " + rows.length + " จาก " + state.rows.length + " รายการ";
+    $("count").textContent = "แสดง " + rows.length + " จาก " + state.rows.length + " รายการ" +
+      (rows.length > VISIBLE_ROWS ? " · เลื่อนในตารางเพื่อดูเพิ่ม" : "");
+    fitTableHeight();
     document.querySelectorAll("th[data-k]").forEach(function (th) {
       if (th.getAttribute("data-k") === k) th.setAttribute("aria-sort", dir > 0 ? "ascending" : "descending");
       else th.removeAttribute("aria-sort");
     });
   }
+
+  // Cap the table viewport at header + VISIBLE_ROWS rows (measured, so it follows font/row height)
+  function fitTableHeight() {
+    var wrap = document.querySelector(".tbl-wrap");
+    var trs = $("tbody").rows;
+    if (!wrap.offsetParent || !trs.length) return;
+    var last = trs[Math.min(VISIBLE_ROWS, trs.length) - 1];
+    wrap.style.maxHeight = (last.offsetTop + last.offsetHeight + 2) + "px";
+  }
+  window.addEventListener("resize", fitTableHeight);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTableHeight);
 
   function render(rows) {
     state.rows = rows;
@@ -563,6 +577,7 @@
       render(parse(table));
       $("status").classList.add("hidden");
       $("app").classList.remove("hidden");
+      fitTableHeight();
     }).catch(function (err) {
       if (state.rows.length) {           // keep last good data on screen
         $("meta").textContent = "โหลดข้อมูลใหม่ไม่สำเร็จ — แสดงข้อมูลเดิม";
