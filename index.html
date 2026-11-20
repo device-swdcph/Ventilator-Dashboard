@@ -106,6 +106,23 @@
   .kpi .foot { color: var(--muted); font-size: 12px; }
   .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
 
+  /* ===== Cross-filter ===== */
+  [data-set] { cursor: pointer; }
+  [data-set]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .kpi[data-set] { transition: border-color .15s, box-shadow .15s; }
+  .kpi[data-set]:hover { border-color: var(--axis); }
+  .kpi.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .dim { opacity: .22; }
+  .fbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: -4px 0 12px; font-size: 13px; color: var(--text-2); }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 12px; cursor: pointer;
+    background: var(--surface); color: var(--text); border: 1px solid var(--accent); border-radius: 999px; padding: 2px 6px 2px 10px;
+  }
+  .chip b { font-weight: 600; }
+  .chip .x { width: 16px; height: 16px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--surface-2); color: var(--text-2); font-size: 11px; }
+  .chip:hover .x { background: var(--accent); color: #fff; }
+  .linkbtn { font: inherit; font-size: 12px; background: none; border: 0; color: var(--accent); cursor: pointer; padding: 2px 4px; text-decoration: underline; }
+
   /* ===== Charts ===== */
   .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
   .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--text-2); margin-bottom: 10px; }
@@ -113,19 +130,24 @@
   .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 
   .hbar { display: grid; grid-template-columns: 120px minmax(0, 1fr) 36px; align-items: center; gap: 10px; padding: 5px 0; }
-  .hbar .name { font-size: 13px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hbar .name { font-size: 13px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-radius: 4px; }
+  .hbar .name:hover { color: var(--text); text-decoration: underline; }
+  .hbar .name.sel { color: var(--text); font-weight: 600; }
   .hbar .track { display: flex; gap: 2px; height: 18px; }
-  .hbar .seg { height: 100%; min-width: 3px; cursor: default; }
+  .hbar .seg { height: 100%; min-width: 3px; transition: opacity .15s; }
   .hbar .seg:first-child { border-radius: 0; }
   .hbar .seg:last-child { border-radius: 0 4px 4px 0; }
   .hbar .seg:hover { filter: brightness(1.08); }
+  .hbar .name.dim { opacity: .5; }
   .hbar .n { font-size: 13px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
 
   .vchart { position: relative; height: 190px; margin-top: 16px; display: flex; align-items: flex-end; gap: 6px; padding: 0 0 0 28px; border-bottom: 1px solid var(--axis); }
   .vchart .gl { position: absolute; left: 28px; right: 0; border-top: 1px solid var(--grid); }
   .vchart .gl span { position: absolute; left: -28px; top: -8px; width: 22px; text-align: right; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .vchart .col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; position: relative; z-index: 1; cursor: default; }
-  .vchart .bar { width: 70%; max-width: 36px; background: var(--seq); border-radius: 4px 4px 0 0; position: relative; }
+  .vchart .col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; position: relative; z-index: 1; }
+  .vchart .col.empty-col { cursor: default; }
+  .vchart .bar { width: 70%; max-width: 36px; background: var(--seq); border-radius: 4px 4px 0 0; position: relative; transition: opacity .15s, height .2s; }
+  .vchart .col.dim { opacity: 1; } .vchart .col.dim .bar { opacity: .22; }
   .vchart .col:hover .bar { filter: brightness(1.12); }
   .vchart .val { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--text-2); margin-bottom: 2px; font-variant-numeric: tabular-nums; }
   .xlabels { display: flex; gap: 6px; padding-left: 28px; margin-top: 4px; }
@@ -134,7 +156,9 @@
 
   /* ===== Attention ===== */
   .alist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .alist li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; padding: 10px 12px; border-radius: 8px; background: var(--surface-2); }
+  .alist li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; padding: 10px 12px; border-radius: 8px; background: var(--surface-2); border: 1px solid transparent; }
+  .alist li[data-set]:hover { border-color: var(--axis); }
+  .alist li.sel { border-color: var(--accent); }
   .alist .t { font-weight: 600; font-size: 13px; }
   .alist .d { font-size: 12px; color: var(--text-2); }
   .empty { color: var(--muted); font-size: 13px; padding: 8px 0; }
@@ -162,6 +186,7 @@
   th[aria-sort="ascending"]::after { content: " ▲"; font-size: 10px; }
   th[aria-sort="descending"]::after { content: " ▼"; font-size: 10px; }
   tbody tr:hover { background: var(--surface-2); }
+  tbody tr.sel { background: var(--surface-2); box-shadow: inset 3px 0 0 var(--accent); }
   td.num { text-align: right; font-variant-numeric: tabular-nums; }
   .count { color: var(--muted); font-size: 12px; margin-top: 8px; }
 
@@ -209,18 +234,19 @@
   <div id="status">กำลังโหลดข้อมูลจาก Google Sheet…</div>
 
   <main id="app" class="hidden">
+    <div class="fbar hidden" id="fbar" aria-live="polite"></div>
     <section class="kpis" aria-label="สรุปภาพรวม">
-      <div class="card kpi"><div class="label">เครื่องทั้งหมด</div><div class="value" id="k-total">–</div><div class="foot" id="k-models">–</div></div>
-      <div class="card kpi"><div class="label"><span class="dot" style="background:var(--good)"></span>ใช้งานได้</div><div class="value" id="k-ok">–</div><div class="foot" id="k-ok-pct">–</div></div>
-      <div class="card kpi"><div class="label"><span class="dot" style="background:var(--critical)"></span>ใช้งานไม่ได้</div><div class="value" id="k-bad">–</div><div class="foot" id="k-bad-pct">–</div></div>
-      <div class="card kpi"><div class="label"><span class="dot" style="background:var(--good)"></span>แบตผ่าน</div><div class="value" id="k-bpass">–</div><div class="foot" id="k-bpass-pct">–</div></div>
-      <div class="card kpi"><div class="label"><span class="dot" style="background:var(--warning)"></span>แบตมีปัญหา</div><div class="value" id="k-bissue">–</div><div class="foot" id="k-bissue-foot">–</div></div>
+      <div class="card kpi" id="t-total" data-set="clear" role="button" tabindex="0" title="ล้างตัวกรองทั้งหมด"><div class="label">เครื่องทั้งหมด</div><div class="value" id="k-total">–</div><div class="foot" id="k-models">–</div></div>
+      <div class="card kpi" id="t-ok" data-set='{"use":"ok"}' role="button" tabindex="0"><div class="label"><span class="dot" style="background:var(--good)"></span>ใช้งานได้</div><div class="value" id="k-ok">–</div><div class="foot" id="k-ok-pct">–</div></div>
+      <div class="card kpi" id="t-bad" data-set='{"use":"bad"}' role="button" tabindex="0"><div class="label"><span class="dot" style="background:var(--critical)"></span>ใช้งานไม่ได้</div><div class="value" id="k-bad">–</div><div class="foot" id="k-bad-pct">–</div></div>
+      <div class="card kpi" id="t-bpass" data-set='{"batt":"good"}' role="button" tabindex="0"><div class="label"><span class="dot" style="background:var(--good)"></span>แบตผ่าน</div><div class="value" id="k-bpass">–</div><div class="foot" id="k-bpass-pct">–</div></div>
+      <div class="card kpi" id="t-bissue" data-set='{"batt":"issue"}' role="button" tabindex="0"><div class="label"><span class="dot" style="background:var(--warning)"></span>แบตมีปัญหา</div><div class="value" id="k-bissue">–</div><div class="foot" id="k-bissue-foot">–</div></div>
     </section>
 
     <section class="grid2">
       <div class="card">
         <h2>สถานะการใช้งานแยกตามรุ่น</h2>
-        <p class="hint">จำนวนเครื่อง (เครื่อง)</p>
+        <p class="hint">จำนวนเครื่อง · คลิกชื่อรุ่นหรือแท่งกราฟเพื่อกรอง</p>
         <div class="legend">
           <span><i style="background:var(--good)"></i>ใช้งานได้</span>
           <span><i style="background:var(--critical)"></i>ใช้งานไม่ได้</span>
@@ -229,7 +255,7 @@
       </div>
       <div class="card">
         <h2>ผลทดสอบแบตเตอรี่แยกตามรุ่น</h2>
-        <p class="hint">จำนวนเครื่อง (เครื่อง)</p>
+        <p class="hint">จำนวนเครื่อง · คลิกชื่อรุ่นหรือแท่งกราฟเพื่อกรอง</p>
         <div class="legend">
           <span><i style="background:var(--good)"></i>ผ่าน</span>
           <span><i style="background:var(--warning)"></i>แบตเตอรี่เสื่อม</span>
@@ -242,19 +268,19 @@
     <section class="grid2">
       <div class="card">
         <h2>อายุการใช้งานของเครื่อง</h2>
-        <p class="hint">จำนวนเครื่องตามอายุการใช้งาน (ปี)</p>
+        <p class="hint">จำนวนเครื่องตามอายุการใช้งาน (ปี) · คลิกแท่งกราฟเพื่อกรอง</p>
         <div id="chart-age"></div>
       </div>
       <div class="card">
         <h2>รายการที่ต้องติดตาม</h2>
-        <p class="hint">เครื่องที่ใช้งานไม่ได้ หรือแบตเตอรี่ไม่ผ่าน</p>
+        <p class="hint">เครื่องที่ใช้งานไม่ได้ หรือแบตเตอรี่ไม่ผ่าน · คลิกเพื่อดูเครื่องนั้น</p>
         <ul class="alist" id="attention"></ul>
       </div>
     </section>
 
     <section class="card">
       <h2>รายการเครื่องทั้งหมด</h2>
-      <p class="hint">คลิกหัวคอลัมน์เพื่อเรียงลำดับ</p>
+      <p class="hint">คลิกหัวคอลัมน์เพื่อเรียงลำดับ · คลิกแถวเพื่อเลือกเครื่อง</p>
       <div class="filters">
         <input id="q" type="search" placeholder="ค้นหา รุ่น / หมายเลขครุภัณฑ์ / หมายเหตุ" aria-label="ค้นหา">
         <select id="f-model" aria-label="กรองตามรุ่น"><option value="">ทุกรุ่น</option></select>
@@ -263,6 +289,7 @@
           <option value="good">ผ่าน</option>
           <option value="warn">แบตเตอรี่เสื่อม</option>
           <option value="crit">ตรวจสอบไม่ได้/ชำรุด</option>
+          <option value="issue">แบตมีปัญหา (เสื่อม + ชำรุด)</option>
         </select>
         <select id="f-use" aria-label="กรองตามการใช้งาน">
           <option value="">การใช้งานทั้งหมด</option>
@@ -302,7 +329,7 @@
   var AUTO_REFRESH_MS = 5 * 60 * 1000;
   var VISIBLE_ROWS = 10;              // table shows this many rows, the rest scroll
 
-  var state = { rows: [], sortKey: "no", sortDir: 1 };
+  var state = { rows: [], models: [], sortKey: "no", sortDir: 1 };
   var $ = function (id) { return document.getElementById(id); };
 
   function esc(s) {
@@ -418,52 +445,97 @@
     return '<span class="badge b-none">' + (esc(r.use) || "–") + "</span>";
   }
 
+  // ===== Cross-filter state =====
+  // Every chart, tile, list item and table row sets one or more of these; all views re-render from them.
+  var F = { model: "", use: "", batt: "", age: null, asset: "" };
+  var DIMS = ["model", "use", "batt", "age", "asset"];
+  var LABELS = {
+    use: { ok: "ใช้งานได้", bad: "ใช้งานไม่ได้" },
+    batt: { good: "แบตผ่าน", warn: "แบตเตอรี่เสื่อม", crit: "ตรวจสอบไม่ได้/ชำรุด", issue: "แบตมีปัญหา" }
+  };
+
+  function battMatch(cls, f) { return f === "issue" ? (cls === "warn" || cls === "crit") : cls === f; }
+  function hasFilter() { return DIMS.some(function (d) { return F[d] !== "" && F[d] != null; }); }
+  // rows passing every active filter except the dims listed in `skip`
+  function filtered(skip) {
+    skip = skip || [];
+    return state.rows.filter(function (r) {
+      if (F.model && skip.indexOf("model") < 0 && r.model !== F.model) return false;
+      if (F.use && skip.indexOf("use") < 0 && r.useCls !== F.use) return false;
+      if (F.batt && skip.indexOf("batt") < 0 && !battMatch(r.battCls, F.batt)) return false;
+      if (F.age != null && skip.indexOf("age") < 0 && (r.age == null || Math.round(r.age) !== F.age)) return false;
+      if (F.asset && skip.indexOf("asset") < 0 && r.asset !== F.asset) return false;
+      return true;
+    });
+  }
+  function setAttr(obj) { return " data-set='" + esc(JSON.stringify(obj)) + "' role=\"button\" tabindex=\"0\""; }
+
+  // Clicking something already selected clears it; selecting anything else clears a single-machine pick
+  function applySet(obj) {
+    if (obj === "clear") { F = { model: "", use: "", batt: "", age: null, asset: "" }; }
+    else {
+      var keys = Object.keys(obj);
+      var same = keys.every(function (k) { return F[k] === obj[k]; });
+      keys.forEach(function (k) { F[k] = same ? (k === "age" ? null : "") : obj[k]; });
+      if (!same && keys.indexOf("asset") < 0) F.asset = "";
+    }
+    renderAll();
+  }
+
   function groupByModel(rows) {
-    var order = [], map = {};
+    var map = {};
+    state.models.forEach(function (m) { map[m] = { model: m, total: 0, ok: 0, bad: 0, good: 0, warn: 0, crit: 0 }; });
     rows.forEach(function (r) {
-      if (!map[r.model]) { map[r.model] = { model: r.model, total: 0, ok: 0, bad: 0, good: 0, warn: 0, crit: 0, ageSum: 0, ageN: 0 }; order.push(r.model); }
       var g = map[r.model];
       g.total++;
       if (r.useCls === "ok") g.ok++; else if (r.useCls === "bad") g.bad++;
       if (r.battCls === "good") g.good++; else if (r.battCls === "warn") g.warn++; else if (r.battCls === "crit") g.crit++;
-      if (r.age != null) { g.ageSum += r.age; g.ageN++; }
     });
-    return order.map(function (k) { return map[k]; });
+    return state.models.map(function (m) { return map[m]; });
   }
 
-  function stackedBars(el, groups, segs) {
+  // segs: [{key, label, color, set:{...}, on:function(seg)->bool}]
+  function stackedBars(el, groups, segs, dimKey) {
     var max = Math.max.apply(null, groups.map(function (g) { return g.total; }).concat([1]));
     el.innerHTML = groups.map(function (g) {
-      var inner = segs.filter(function (s) { return g[s.key] > 0; }).map(function (s) {
-        var w = g[s.key] / max * 100;
-        return '<div class="seg" style="width:' + w + '%;background:' + s.color + '" data-tip="' +
-          esc("<b>" + g.model + "</b>" + s.label + ": " + g[s.key] + " เครื่อง (" + pct(g[s.key], g.total) + ")") + '"></div>';
+      var modelOff = F.model && g.model !== F.model;
+      var inner = segs.filter(function (sg) { return g[sg.key] > 0; }).map(function (sg) {
+        var w = g[sg.key] / max * 100;
+        var off = modelOff || (F[dimKey] && !sg.on(F[dimKey]));
+        var set = { model: g.model }; set[dimKey] = sg.val;
+        return '<div class="seg' + (off ? " dim" : "") + '" style="width:' + w + '%;background:' + sg.color + '"' + setAttr(set) +
+          ' aria-label="' + esc(g.model + " " + sg.label + " " + g[sg.key] + " เครื่อง") + '" data-tip="' +
+          esc("<b>" + g.model + "</b>" + sg.label + ": " + g[sg.key] + " เครื่อง (" + pct(g[sg.key], g.total) + ")<br><span style='color:var(--muted)'>คลิกเพื่อกรอง</span>") + '"></div>';
       }).join("");
-      return '<div class="hbar"><div class="name" title="' + esc(g.model) + '">' + esc(g.model) + '</div><div class="track">' + inner + '</div><div class="n">' + g.total + "</div></div>";
+      return '<div class="hbar"><div class="name' + (F.model === g.model ? " sel" : "") + (modelOff ? " dim" : "") + '" title="' + esc(g.model) + '"' +
+        setAttr({ model: g.model }) + ">" + esc(g.model) + '</div><div class="track">' + inner + '</div><div class="n">' + g.total + "</div></div>";
     }).join("");
   }
 
   function ageChart(el, rows) {
-    var ages = rows.map(function (r) { return r.age; }).filter(function (a) { return a != null; });
-    if (!ages.length) { el.innerHTML = '<div class="empty">ไม่มีข้อมูลอายุการใช้งาน</div>'; return; }
-    var lo = Math.min.apply(null, ages), hi = Math.max.apply(null, ages);
+    var all = state.rows.map(function (r) { return r.age; }).filter(function (a) { return a != null; });
+    if (!all.length) { el.innerHTML = '<div class="empty">ไม่มีข้อมูลอายุการใช้งาน</div>'; return; }
+    // axis range comes from the full data set so bars don't jump around while filtering
+    var lo = Math.floor(Math.min.apply(null, all)), hi = Math.ceil(Math.max.apply(null, all));
     var bins = [];
-    for (var a = Math.floor(lo); a <= Math.ceil(hi); a++) bins.push({ age: a, n: 0, models: {} });
+    for (var a = lo; a <= hi; a++) bins.push({ age: a, n: 0, models: {} });
     rows.forEach(function (r) {
       if (r.age == null) return;
-      var b = bins[Math.round(r.age) - Math.floor(lo)];
+      var b = bins[Math.round(r.age) - lo];
       if (!b) return;
       b.n++; b.models[r.model] = (b.models[r.model] || 0) + 1;
     });
-    var max = Math.max.apply(null, bins.map(function (b) { return b.n; }));
+    var max = Math.max.apply(null, bins.map(function (b) { return b.n; }).concat([1]));
     var step = max <= 5 ? 1 : max <= 12 ? 2 : 5;
     var top = Math.ceil(max / step) * step;
     var grid = "";
     for (var t = step; t <= top; t += step) grid += '<div class="gl" style="bottom:' + (t / top * 100) + '%"><span>' + t + "</span></div>";
     var cols = bins.map(function (b) {
       var detail = Object.keys(b.models).map(function (m) { return m + ": " + b.models[m]; }).join("<br>");
-      var tip = "<b>อายุ " + b.age + " ปี — " + b.n + " เครื่อง</b>" + (detail || "ไม่มีเครื่อง");
-      return '<div class="col" data-tip="' + esc(tip) + '"><div class="bar" style="height:' + (b.n / top * 100) + '%">' +
+      var tip = "<b>อายุ " + b.age + " ปี — " + b.n + " เครื่อง</b>" + (detail || "ไม่มีเครื่อง") + (b.n ? "<br><span style='color:var(--muted)'>คลิกเพื่อกรอง</span>" : "");
+      var off = F.age != null && b.age !== F.age;
+      return '<div class="col' + (off ? " dim" : "") + (b.n ? "" : " empty-col") + '"' + (b.n || F.age === b.age ? setAttr({ age: b.age }) : "") +
+        ' aria-label="' + esc("อายุ " + b.age + " ปี " + b.n + " เครื่อง") + '" data-tip="' + esc(tip) + '"><div class="bar" style="height:' + (b.n / top * 100) + '%">' +
         (b.n ? '<span class="val">' + b.n + "</span>" : "") + "</div></div>";
     }).join("");
     el.innerHTML = '<div class="vchart">' + grid + cols + '</div><div class="xlabels">' +
@@ -477,20 +549,16 @@
       var bad = r.useCls === "bad" || r.battCls === "crit";
       var ic = bad ? '<span class="badge b-crit"><span class="ic" aria-hidden="true">✕</span></span>' : '<span class="badge b-warn"><span class="ic" aria-hidden="true">!</span></span>';
       var parts = [r.batt ? "แบต: " + esc(r.batt) : "", r.use ? "การใช้งาน: " + esc(r.use) : "", r.note ? esc(r.note) : ""].filter(Boolean);
-      return "<li>" + ic + '<div><div class="t">' + esc(r.model) + " · " + esc(r.asset) + '</div><div class="d">' + parts.join(" · ") + "</div></div></li>";
-    }).join("") : '<li><span class="badge b-good"><span class="ic" aria-hidden="true">✓</span></span><div><div class="t">ไม่มีรายการที่ต้องติดตาม</div><div class="d">ทุกเครื่องใช้งานได้และแบตเตอรี่ผ่าน</div></div></li>';
+      return '<li class="' + (F.asset === r.asset ? "sel" : "") + '"' + setAttr({ asset: r.asset }) + ">" + ic + '<div><div class="t">' + esc(r.model) + " · " + esc(r.asset) + '</div><div class="d">' + parts.join(" · ") + "</div></div></li>";
+    }).join("") : '<li><span class="badge b-good"><span class="ic" aria-hidden="true">✓</span></span><div><div class="t">ไม่มีรายการที่ต้องติดตาม</div><div class="d">' +
+      (hasFilter() ? "ไม่มีเครื่องที่มีปัญหาในข้อมูลที่กรองอยู่" : "ทุกเครื่องใช้งานได้และแบตเตอรี่ผ่าน") + "</div></div></li>";
   }
 
   function renderTable() {
     var q = $("q").value.trim().toLowerCase();
-    var fm = $("f-model").value, fb = $("f-batt").value, fu = $("f-use").value;
     var k = state.sortKey, dir = state.sortDir;
-    var rows = state.rows.filter(function (r) {
-      if (fm && r.model !== fm) return false;
-      if (fb && r.battCls !== fb) return false;
-      if (fu && r.useCls !== fu) return false;
-      if (q && (r.model + " " + r.asset + " " + r.note + " " + r.batt + " " + r.use).toLowerCase().indexOf(q) < 0) return false;
-      return true;
+    var rows = filtered().filter(function (r) {
+      return !q || (r.model + " " + r.asset + " " + r.note + " " + r.batt + " " + r.use).toLowerCase().indexOf(q) >= 0;
     }).sort(function (a, b) {
       var x = a[k], y = b[k];
       if (x == null) x = ""; if (y == null) y = "";
@@ -498,7 +566,7 @@
       return c * dir || (a.no - b.no);
     });
     $("tbody").innerHTML = rows.map(function (r) {
-      return "<tr><td class=\"num\">" + esc(r.no) + "</td><td>" + esc(r.model) + "</td><td>" + esc(r.asset) + "</td><td>" + esc(r.recv) +
+      return '<tr class="' + (F.asset === r.asset ? "sel" : "") + '"' + setAttr({ asset: r.asset }) + '><td class="num">' + esc(r.no) + "</td><td>" + esc(r.model) + "</td><td>" + esc(r.asset) + "</td><td>" + esc(r.recv) +
         '</td><td class="num">' + (r.age != null ? esc(r.age) : "–") + "</td><td>" + badgeBatt(r) + "</td><td>" + badgeUse(r) +
         '</td><td class="note">' + (esc(r.note) || '<span style="color:var(--muted)">–</span>') + "</td></tr>";
     }).join("") || '<tr><td colspan="8" class="empty">ไม่พบรายการที่ตรงกับเงื่อนไข</td></tr>';
@@ -522,45 +590,79 @@
   window.addEventListener("resize", fitTableHeight);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTableHeight);
 
-  function render(rows) {
-    state.rows = rows;
+  function renderFilterBar() {
+    var chips = [];
+    function chip(dim, text) { chips.push('<button type="button" class="chip" data-clear="' + dim + '" aria-label="ลบตัวกรอง ' + esc(text) + '">' + text + '<span class="x" aria-hidden="true">✕</span></button>'); }
+    if (F.model) chip("model", "รุ่น: <b>" + esc(F.model) + "</b>");
+    if (F.use) chip("use", "การใช้งาน: <b>" + LABELS.use[F.use] + "</b>");
+    if (F.batt) chip("batt", "แบต: <b>" + LABELS.batt[F.batt] + "</b>");
+    if (F.age != null) chip("age", "อายุ: <b>" + F.age + " ปี</b>");
+    if (F.asset) chip("asset", "ครุภัณฑ์: <b>" + esc(F.asset) + "</b>");
+    var bar = $("fbar");
+    bar.classList.toggle("hidden", !chips.length);
+    bar.innerHTML = chips.length ? "กำลังกรอง:" + chips.join("") + '<button type="button" class="linkbtn" data-set="clear">ล้างตัวกรองทั้งหมด</button>' : "";
+  }
+
+  function renderAll() {
+    var rows = filtered();
     var total = rows.length;
     var ok = rows.filter(function (r) { return r.useCls === "ok"; }).length;
     var bad = rows.filter(function (r) { return r.useCls === "bad"; }).length;
     var bpass = rows.filter(function (r) { return r.battCls === "good"; }).length;
     var bwarn = rows.filter(function (r) { return r.battCls === "warn"; }).length;
     var bcrit = rows.filter(function (r) { return r.battCls === "crit"; }).length;
-    var groups = groupByModel(rows);
+    var nModels = rows.reduce(function (m, r) { m[r.model] = 1; return m; }, {});
+    var of = hasFilter() ? " ของที่กรอง" : " ของทั้งหมด";
 
     $("k-total").textContent = total;
-    $("k-models").textContent = groups.length + " รุ่น";
+    $("k-models").textContent = hasFilter() ? "จาก " + state.rows.length + " เครื่อง · " + Object.keys(nModels).length + " รุ่น" : Object.keys(nModels).length + " รุ่น";
     $("k-ok").textContent = ok;
-    $("k-ok-pct").textContent = pct(ok, total) + " ของทั้งหมด";
+    $("k-ok-pct").textContent = pct(ok, total) + of;
     $("k-bad").textContent = bad;
-    $("k-bad-pct").textContent = pct(bad, total) + " ของทั้งหมด";
+    $("k-bad-pct").textContent = pct(bad, total) + of;
     $("k-bpass").textContent = bpass;
-    $("k-bpass-pct").textContent = pct(bpass, total) + " ของทั้งหมด";
+    $("k-bpass-pct").textContent = pct(bpass, total) + of;
     $("k-bissue").textContent = bwarn + bcrit;
     $("k-bissue-foot").textContent = "เสื่อม " + bwarn + " · ชำรุด " + bcrit;
+    $("t-total").classList.toggle("active", false);
+    $("t-ok").classList.toggle("active", F.use === "ok");
+    $("t-bad").classList.toggle("active", F.use === "bad");
+    $("t-bpass").classList.toggle("active", F.batt === "good");
+    $("t-bissue").classList.toggle("active", F.batt === "issue");
 
-    stackedBars($("chart-usage"), groups, [
-      { key: "ok", label: "ใช้งานได้", color: "var(--good)" },
-      { key: "bad", label: "ใช้งานไม่ได้", color: "var(--critical)" }
-    ]);
-    stackedBars($("chart-batt"), groups, [
-      { key: "good", label: "ผ่าน", color: "var(--good)" },
-      { key: "warn", label: "แบตเตอรี่เสื่อม", color: "var(--warning)" },
-      { key: "crit", label: "ตรวจสอบไม่ได้/ชำรุด", color: "var(--critical)" }
-    ]);
-    ageChart($("chart-age"), rows);
-    renderAttention(rows);
+    // each chart ignores its own dimensions so the unselected parts stay visible (dimmed) for comparison
+    stackedBars($("chart-usage"), groupByModel(filtered(["model", "use"])), [
+      { key: "ok", val: "ok", label: "ใช้งานได้", color: "var(--good)", on: function (f) { return f === "ok"; } },
+      { key: "bad", val: "bad", label: "ใช้งานไม่ได้", color: "var(--critical)", on: function (f) { return f === "bad"; } }
+    ], "use");
+    stackedBars($("chart-batt"), groupByModel(filtered(["model", "batt"])), [
+      { key: "good", val: "good", label: "ผ่าน", color: "var(--good)", on: function (f) { return f === "good"; } },
+      { key: "warn", val: "warn", label: "แบตเตอรี่เสื่อม", color: "var(--warning)", on: function (f) { return f === "warn" || f === "issue"; } },
+      { key: "crit", val: "crit", label: "ตรวจสอบไม่ได้/ชำรุด", color: "var(--critical)", on: function (f) { return f === "crit" || f === "issue"; } }
+    ], "batt");
+    ageChart($("chart-age"), filtered(["age"]));
+    renderAttention(filtered(["asset"]));
 
-    var sel = $("f-model"), cur = sel.value;
-    sel.innerHTML = '<option value="">ทุกรุ่น</option>' + groups.map(function (g) {
+    $("f-model").value = F.model;
+    $("f-batt").value = F.batt;
+    $("f-use").value = F.use;
+    renderFilterBar();
+    renderTable();
+  }
+
+  function render(rows) {
+    state.rows = rows;
+    state.models = [];
+    rows.forEach(function (r) { if (state.models.indexOf(r.model) < 0) state.models.push(r.model); });
+    // drop selections that no longer exist after a refresh
+    if (F.model && state.models.indexOf(F.model) < 0) F.model = "";
+    if (F.asset && !rows.some(function (r) { return r.asset === F.asset; })) F.asset = "";
+
+    var counts = groupByModel(rows);
+    $("f-model").innerHTML = '<option value="">ทุกรุ่น</option>' + counts.map(function (g) {
       return '<option value="' + esc(g.model) + '">' + esc(g.model) + " (" + g.total + ")</option>";
     }).join("");
-    sel.value = cur;
-    renderTable();
+    renderAll();
 
     var checked = rows.map(function (r) { return r.checked; }).filter(Boolean).sort(function (a, b) { return b - a; })[0];
     var now = new Date();
@@ -574,10 +676,9 @@
     loading = true;
     $("refresh").disabled = true;
     fetchSheet().then(function (table) {
-      render(parse(table));
       $("status").classList.add("hidden");
       $("app").classList.remove("hidden");
-      fitTableHeight();
+      render(parse(table));
     }).catch(function (err) {
       if (state.rows.length) {           // keep last good data on screen
         $("meta").textContent = "โหลดข้อมูลใหม่ไม่สำเร็จ — แสดงข้อมูลเดิม";
@@ -592,15 +693,30 @@
 
   // ===== Events =====
   $("refresh").addEventListener("click", load);
-  ["q", "f-model", "f-batt", "f-use"].forEach(function (id) {
-    $(id).addEventListener(id === "q" ? "input" : "change", renderTable);
-  });
+  $("q").addEventListener("input", renderTable);
+  $("f-model").addEventListener("change", function () { F.model = this.value; F.asset = ""; renderAll(); });
+  $("f-batt").addEventListener("change", function () { F.batt = this.value; F.asset = ""; renderAll(); });
+  $("f-use").addEventListener("change", function () { F.use = this.value; F.asset = ""; renderAll(); });
   document.querySelectorAll("th[data-k]").forEach(function (th) {
     th.addEventListener("click", function () {
       var k = th.getAttribute("data-k");
       if (state.sortKey === k) state.sortDir *= -1; else { state.sortKey = k; state.sortDir = 1; }
       renderTable();
     });
+  });
+  function onActivate(e) {
+    var c = e.target.closest("[data-clear]");
+    if (c) { var d = c.getAttribute("data-clear"); F[d] = d === "age" ? null : ""; renderAll(); return; }
+    var t = e.target.closest("[data-set]");
+    if (!t) return;
+    var v = t.getAttribute("data-set");
+    $("tip").style.opacity = 0;
+    applySet(v === "clear" ? v : JSON.parse(v));
+  }
+  document.addEventListener("click", onActivate);
+  document.addEventListener("keydown", function (e) {
+    if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches("[data-set]:not(button)")) { e.preventDefault(); onActivate(e); }
+    if (e.key === "Escape" && hasFilter()) applySet("clear");
   });
 
   // Tooltip
